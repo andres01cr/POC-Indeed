@@ -1,0 +1,29 @@
+version: '3'
+services:
+  java-service:
+    build:
+      context: .
+      dockerfile: java-service/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - POSTGRES_URL=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    depends_on:
+      - postgres
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+  react-service:
+    build:
+      context: .
+      dockerfile: react-service/Dockerfile
+    ports:
+      - "3000:3000"
+volumes:
+  postgres-data:
