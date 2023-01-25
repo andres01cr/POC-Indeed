@@ -1,17 +1,24 @@
 version: '3'
 services:
   java-service:
+    container_name: java-service
+    image: local-java-service
     build:
-      context: .
-      dockerfile: java-service/Dockerfile
+      context: ./java-service
+      dockerfile: Dockerfile
     ports:
       - "8080:8080"
     environment:
-      - POSTGRES_URL=postgres
+      - POSTGRES_URL=jdbc:postgresql://postgres:5432/postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     depends_on:
       - postgres
+    volumes:
+      - './java-service/src:/java-service/src'
+      - './java-service/target:/java-service/target'
+      - './java-service/pom.xml:/java-service/pom.xml'
+      - './java-service/mvnw:/java-service/mvnw'
   postgres:
     image: postgres
     environment:
@@ -19,11 +26,17 @@ services:
       - POSTGRES_PASSWORD=postgres
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
   react-service:
+    container_name: react-service
+    image: local-react-service
     build:
-      context: .
-      dockerfile: react-service/Dockerfile
+      context: ./react-service
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
+    volumes:
+      - './react-service/src:/react-service/src'
 volumes:
   postgres-data:
