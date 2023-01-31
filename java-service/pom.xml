@@ -15,7 +15,7 @@
 	<description>Demo project for Indeed</description>
 	<properties>
 		<java.version>11</java.version>
-		<liquibase.version>3.7.0</liquibase.version>
+		<liquibase.version>4.19.0</liquibase.version>
 	</properties>
 	<dependencies>
 		<!-- <dependency>
@@ -28,8 +28,23 @@
 			<version>${liquibase.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>net.logstash.logback</groupId>
+			<artifactId>logstash-logback-encoder</artifactId>
+			<version>6.4</version>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+			<version>3.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger-ui</artifactId>
+			<version>3.0.0</version>
 		</dependency>
 		<!-- <dependency>
 			<groupId>org.springframework.boot</groupId>

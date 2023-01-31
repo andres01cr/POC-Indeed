@@ -175,5 +175,5 @@ export default class TutorialsList extends Component {
       </div>
     </div>
   );
-        }
-    }
+  }
+}

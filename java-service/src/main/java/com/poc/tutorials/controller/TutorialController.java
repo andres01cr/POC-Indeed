@@ -8,10 +8,7 @@ import com.poc.tutorials.service.TutorialService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.http.HttpStatus;
 
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -52,7 +49,7 @@ public class TutorialController {
     @PathVariable("tutorialId")
     @NotNull
       UUID tutorialId) {
-    tutorialService.deleteTutorialById(tutorialId);
+    tutorialService.deleteAllTutorials();
     return ResponseEntity.ok(tutorialId);
   }
 
@@ -71,11 +68,11 @@ public class TutorialController {
    * Get a tutorial by id
    *
    */
-//  @GetMapping(value = "/{tutorialId}")
-//  public ResponseEntity<TutorialEntity> getTutorialById(
-//    @PathVariable("id") UUID tutorialId) {
-//    return ResponseEntity.ok(tutorialService.getTutorialById(tutorialId));
-//  }
+  @GetMapping(value = "/{tutorialId}")
+  public ResponseEntity<TutorialEntity> getTutorialById(
+    @PathVariable("id") UUID tutorialId) {
+    return ResponseEntity.ok(tutorialService.getTutorialById(tutorialId));
+  }
 
   /**
    * Get all tutorials
@@ -84,18 +81,6 @@ public class TutorialController {
   @GetMapping(value = "/")
   public ResponseEntity<List<TutorialEntity>> getAllTutorials(
      @PathVariable("title") String title) {
-
-    List<TutorialEntity> tutorials = new ArrayList<TutorialEntity>();
-
-    if (title == null)
-      tutorialRepository.findAll().forEach(tutorials::add);
-    else
-      tutorialRepository.findByTitleContaining(title).forEach(tutorials::add);
-
-    if (tutorials.isEmpty()) {
-      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
     return ResponseEntity.ok(tutorialService.getAllTutorials(title));
   }
 

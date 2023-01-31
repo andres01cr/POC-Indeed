@@ -1,3 +1,14 @@
+config:
+  service:
+    name: java-service
+    id: a8201b36-694d-4904-930b-fb79e4888888
+  swagger:
+    info:
+      title: Tutorial
+      description: Interface to get tutorial configurations
+  cors:
+    allowedOrigins: http://localhost:8080
+
 spring:
   sql:
     init:
@@ -9,7 +20,7 @@ spring:
     username: ${POSTGRES_USER:postgres}
     password: ${POSTGRES_PASSWORD:postgres}
     hikari:
-      connection-init-sql: CREATE SCHEMA IF NOT EXISTS casefile
+      connection-init-sql: CREATE SCHEMA IF NOT EXISTS poc
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
@@ -24,6 +35,16 @@ spring:
       dialect: org.hibernate.dialect.PostgreSQLDialect
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
+  liquibase:
+    change-log: classpath:/changeLog.json
+    enabled: true
+    liquibase-schema: poc
+    database-change-log-lock-table: DATABASECHANGELOGLOCK
+    database-change-log-table: DATABASECHANGELOG
+
   main:
     allow-circular-references: true
     allow-bean-definition-overriding: true
+
+logging:
+  config: classpath:logback-spring.xml
