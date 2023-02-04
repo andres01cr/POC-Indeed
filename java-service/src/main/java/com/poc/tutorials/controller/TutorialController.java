@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-@RequestMapping(value = "/api/v1/tutorials")
+@RestController
 public class TutorialController {
   @Autowired
   private TutorialService tutorialService;

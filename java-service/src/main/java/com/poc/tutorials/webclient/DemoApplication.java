@@ -1,4 +1,4 @@
-package com.poc.tutorials;
+package com.poc.tutorials.webclient;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

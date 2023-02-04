@@ -45,6 +45,3 @@ spring:
   main:
     allow-circular-references: true
     allow-bean-definition-overriding: true
-
-logging:
-  config: classpath:logback-spring.xml
