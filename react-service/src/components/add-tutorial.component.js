@@ -6,6 +6,7 @@ export default class AddTutorial extends Component {
     super(props);
     this.onChangeTitle = this.onChangeTitle.bind(this);
     this.onChangeDescription = this.onChangeDescription.bind(this);
+    this.onChangePublished = this.onChangePublished.bind(this);
     this.saveTutorial = this.saveTutorial.bind(this);
     this.newTutorial = this.newTutorial.bind(this);
 
@@ -14,7 +15,6 @@ export default class AddTutorial extends Component {
       title: "",
       description: "", 
       published: false,
-
       submitted: false
     };
   }
@@ -25,6 +25,13 @@ export default class AddTutorial extends Component {
     });
   }
 
+  onChangePublished(e) {
+    this.setState({
+      published: e.target.checked
+    });
+  }
+
+
   onChangeDescription(e) {
     this.setState({
       description: e.target.value
@@ -34,7 +41,8 @@ export default class AddTutorial extends Component {
   saveTutorial() {
     var data = {
       title: this.state.title,
-      description: this.state.description
+      description: this.state.description,
+      published: this.state.published
     };
 
     TutorialDataService.create(data)
@@ -66,49 +74,60 @@ export default class AddTutorial extends Component {
   }
 
   render() {
-  return (
-    <div className="submit-form">
-      {this.state.submitted ? (
-        <div>
-          <h4>You submitted successfully!</h4>
-          <button className="btn btn-success" onClick={this.newTutorial}>
-            Add
-          </button>
-        </div>
-      ) : (
-        <div>
-          <div className="form-group">
-            <label htmlFor="title">Title</label>
-            <input
-              type="text"
-              className="form-control"
-              id="title"
-              required
-              value={this.state.title}
-              onChange={this.onChangeTitle}
-              name="title"
-            />
+    return (
+      <div className="submit-form">
+        {this.state.submitted ? (
+          <div>
+            <h4>You submitted successfully!</h4>
+            <button className="btn btn-success" onClick={this.newTutorial}>
+              Add
+            </button>
           </div>
+        ) : (
+          <div>
+            <div className="form-group">
+              <label htmlFor="title">Title</label>
+              <input
+                type="text"
+                className="form-control"
+                id="title"
+                required
+                value={this.state.title}
+                onChange={this.onChangeTitle}
+                name="title"
+              />
+            </div>
 
-          <div className="form-group">
-            <label htmlFor="description">Description</label>
-            <input
-              type="text"
-              className="form-control"
-              id="description"
-              required
-              value={this.state.description}
-              onChange={this.onChangeDescription}
-              name="description"
-            />
+            <div className="form-group">
+              <label htmlFor="description">Description</label>
+              <input
+                type="text"
+                className="form-control"
+                id="description"
+                required
+                value={this.state.description}
+                onChange={this.onChangeDescription}
+                name="description"
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="published">Published</label>
+              <input
+                type="checkbox"
+                id="published"
+                required
+                checked={this.state.published}
+                onChange={this.onChangePublished}
+                name="published"
+              />
+            </div>
+
+            <button onClick={this.saveTutorial} className="btn btn-success">
+              Submit
+            </button>
           </div>
-
-          <button onClick={this.saveTutorial} className="btn btn-success">
-            Submit
-          </button>
-        </div>
-      )}
-    </div>
-  );
-}
+        )}
+      </div>
+    );
+  }
 }

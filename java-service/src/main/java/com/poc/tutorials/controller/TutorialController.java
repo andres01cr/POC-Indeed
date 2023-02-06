@@ -1,96 +1,90 @@
 package com.poc.tutorials.controller;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
 import com.poc.tutorials.model.TutorialEntity;
 import com.poc.tutorials.service.TutorialService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 
 @RestController
+@RequestMapping("api/tutorials")
 public class TutorialController {
-  @Autowired
-  private TutorialService tutorialService;
+    @Autowired
+    private TutorialService tutorialService;
 
-  /**
-   * Adds a tutorial.
-   *
-   */
-  @PostMapping
-  public ResponseEntity<TutorialEntity> createTutorial(
-    @Valid @RequestBody TutorialEntity tutorialEntity) {
-    return ResponseEntity.ok(tutorialService.createTutorial(tutorialEntity));
-  }
+    /**
+     * Adds a tutorial.
+     */
+    @PostMapping("/")
+    public ResponseEntity<TutorialEntity> createTutorial(
+            @Valid @RequestBody TutorialEntity tutorialEntity) {
+        return ResponseEntity.ok(tutorialService.createTutorial(tutorialEntity));
+    }
 
-  /**
-   * Delete a tutorial
-   *
-   */
-  @DeleteMapping(value = "/{tutorialId}")
-  public ResponseEntity<UUID>  deleteTutorial(
-    @PathVariable("tutorialId")
-    @NotNull
-      UUID tutorialId) {
-    tutorialService.deleteTutorialById(tutorialId);
-    return ResponseEntity.ok(tutorialId);
-  }
-
+    /**
+     * Delete a tutorial
+     */
+    @DeleteMapping(value = "/{tutorialId}")
+    public void deleteTutorial(@PathVariable("tutorialId") UUID tutorialId) {
+        tutorialService.deleteTutorialById(tutorialId);
+    }
   /**
    * Delete all tutorials
    *
    */
-  @DeleteMapping(value = "/{tutorialId}")
+  @DeleteMapping(value = "/deleteAll")
   public ResponseEntity<UUID>  deleteAllTutorial(
     @PathVariable("tutorialId")
-    @NotNull
       UUID tutorialId) {
     tutorialService.deleteAllTutorials();
     return ResponseEntity.ok(tutorialId);
   }
+    /**
+     * Updates a tutorial
+     */
+    @PatchMapping(value = "/{tutorialId}")
+    public ResponseEntity<TutorialEntity> updateTutorial(
+            @PathVariable("tutorialId") UUID tutorialId,
+            @Valid @RequestBody TutorialEntity tutorialEntity) {
+        return ResponseEntity.ok(tutorialService.updateTutorialById(tutorialId, tutorialEntity));
+    }
 
-  /**
-   * Updates a tutorial
-   *
-   */
-  @PatchMapping(value = "/{tutorialId}")
-  public ResponseEntity<TutorialEntity> updateTutorial(
-    @PathVariable("id") UUID tutorialId,
-    @Valid @RequestBody TutorialEntity tutorialEntity) {
-    return ResponseEntity.ok(tutorialService.updateTutorialById(tutorialId, tutorialEntity));
-  }
-
-  /**
-   * Get a tutorial by id
-   *
-   */
-  @GetMapping(value = "/{tutorialId}")
-  public ResponseEntity<TutorialEntity> getTutorialById(
-    @PathVariable("id") UUID tutorialId) {
-    return ResponseEntity.ok(tutorialService.getTutorialById(tutorialId));
-  }
-
+    /**
+     * Get a tutorial by id
+     */
+    @GetMapping(value = "/{tutorialId}")
+    public ResponseEntity<TutorialEntity> getTutorialById(
+            @PathVariable("tutorialId") UUID tutorialId) {
+        return tutorialService.getTutorialById(tutorialId)
+                .map(t -> ResponseEntity.ok(t))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
   /**
    * Get all tutorials
    *
    */
-  @GetMapping(value = "/")
+  @GetMapping(value = "/all")
   public ResponseEntity<List<TutorialEntity>> getAllTutorials(
-     @PathVariable("title") String title) {
-    return ResponseEntity.ok(tutorialService.getAllTutorials(title));
+      @RequestParam(required = false)  String title) {
+    System.out.println("Getting tutorials by title:  " + title);
+    return ResponseEntity.ok(tutorialService.getAllTutorialsByTitle(title));
   }
 
-  /**
-   * Get tutorials published
-   *
-   */
-  @GetMapping(value = "/")
-  public ResponseEntity<List<TutorialEntity>> getTutorialsPublished() {
-    return ResponseEntity.ok(tutorialService.getTutorialsPublished());
-  }
+
+    /**
+     * Get tutorials published
+     */
+    
+     @GetMapping(value = "/published")
+    public ResponseEntity<List<TutorialEntity>> getTutorialsPublished() {
+        List<TutorialEntity> tutorialsPublished = tutorialService.getTutorialsPublished();
+        return tutorialsPublished.isEmpty() ? ResponseEntity.status(HttpStatus.NO_CONTENT).build()
+                :
+                ResponseEntity.ok(tutorialsPublished);
+    }
 }
-

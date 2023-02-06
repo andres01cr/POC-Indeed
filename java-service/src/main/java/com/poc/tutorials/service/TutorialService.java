@@ -2,8 +2,6 @@ package com.poc.tutorials.service;
 
 import com.poc.tutorials.model.TutorialEntity;
 import com.poc.tutorials.repository.TutorialRepository;
-import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +19,7 @@ public class TutorialService {
   @Autowired private TutorialRepository tutorialRepository;
 
   public TutorialEntity createTutorial(TutorialEntity tutorialEntity) {
-    return tutorialRepository.save(tutorialEntity);
+    return tutorialRepository.save(new TutorialEntity(tutorialEntity.getTitle(), tutorialEntity.getDescription(), tutorialEntity.isPublished()));
   }
 
   public TutorialEntity updateTutorialById(UUID tutorialId, TutorialEntity tutorialEntity) {
@@ -38,12 +36,11 @@ public class TutorialService {
     tutorialRepository.deleteAll();
   }
 
-  public TutorialEntity getTutorialById(UUID tutorialId) {
-    Optional<TutorialEntity> tutorialData = tutorialRepository.findById(tutorialId);
-    return tutorialData.get();
+  public Optional<TutorialEntity>  getTutorialById(UUID tutorialId) {
+    return  tutorialRepository.findById(tutorialId);
   }
 
-  public List<TutorialEntity> getAllTutorials(String title) {
+  public List<TutorialEntity> getAllTutorialsByTitle(String title) {
 
     List<TutorialEntity> tutorials = new ArrayList<TutorialEntity>();
 

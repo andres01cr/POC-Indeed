@@ -15,6 +15,13 @@
         "changes": [
           {
             "sql": {
+              "comment": "Add uuid-ossp extension for poc schema",
+              "endDelimiter": ";",
+              "sql": "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\""
+            }
+          },
+          {
+            "sql": {
               "comment": "Add schema for java service",
               "endDelimiter": ";",
               "sql": "CREATE SCHEMA IF NOT EXISTS poc"
@@ -30,6 +37,7 @@
                   "column": {
                     "name": "id",
                     "type": "uuid",
+                    "defaultValueComputed": "uuid_generate_v4()",
                     "constraints": {
                       "primaryKey": true,
                       "primaryKeyName": "pk_tutorial",

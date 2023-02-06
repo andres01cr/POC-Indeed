@@ -114,14 +114,14 @@ class Tutorial extends Component {
       });
   }
 
-  render(){
+  render() {
     const { currentTutorial } = this.state;
 
     return (
       <div>
         {currentTutorial ? (
           <div className="edit-form">
-            <h4>Tutorial</h4>
+            <h4>Courses</h4>
             <form>
               <div className="form-group">
                 <label htmlFor="title">Title</label>
@@ -187,7 +187,7 @@ class Tutorial extends Component {
         ) : (
           <div>
             <br />
-            <p>Please click on a Tutorial...</p>
+            <p>Please click on a course...</p>
           </div>
         )}
       </div>

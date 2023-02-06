@@ -1,9 +1,6 @@
 package com.poc.tutorials.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -14,6 +11,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+
 @Table(schema = "poc", name = "tutorial")
 public class TutorialEntity {
 
@@ -38,5 +36,39 @@ public class TutorialEntity {
   @Column(name = "published")
   private boolean published;
 
+
+  public TutorialEntity(String title, String description, boolean published) {
+    this.title = title;
+    this.description = description;
+    this.published = published;
+  }
+
+  public UUID getId() {
+    return id;
+  }
+
+  public String getTitle() {
+    return title;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public boolean isPublished() {
+    return published;
+  }
+
+  public void setPublished(boolean isPublished) {
+    this.published = isPublished;
+  }
 }
 
