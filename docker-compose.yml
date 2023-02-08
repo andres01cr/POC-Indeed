@@ -12,14 +12,19 @@ services:
       - POSTGRES_URL=jdbc:postgresql://postgres:5432/postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+      - SPRING_REDIS_HOST=cache
+      - SPRING_REDIS_PORT=6379
     depends_on:
       - postgres
+      - cache
     volumes:
       - './java-service/src:/java-service/src'
       - './java-service/target:/java-service/target'
       - './java-service/pom.xml:/java-service/pom.xml'
       - './java-service/mvnw:/java-service/mvnw'
       - '~/.m2:/root/.m2'
+    links:
+      - cache
   postgres:
     image: postgres
     environment:
@@ -39,5 +44,17 @@ services:
       - "3000:3000"
     volumes:
       - './react-service/src:/react-service/src'
+  cache:
+    image: redis:6.2-alpine
+    hostname: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --save 20 1 --loglevel warning
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
 volumes:
   postgres-data:
+  cache:
+    driver: local

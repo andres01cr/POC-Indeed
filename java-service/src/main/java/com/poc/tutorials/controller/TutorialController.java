@@ -38,11 +38,9 @@ public class TutorialController {
    *
    */
   @DeleteMapping(value = "/deleteAll")
-  public ResponseEntity<UUID>  deleteAllTutorial(
-    @PathVariable("tutorialId")
-      UUID tutorialId) {
+  public ResponseEntity<HttpStatus>  deleteAllTutorial() {
     tutorialService.deleteAllTutorials();
-    return ResponseEntity.ok(tutorialId);
+    return ResponseEntity.ok( HttpStatus.ACCEPTED);
   }
     /**
      * Updates a tutorial

@@ -2,7 +2,7 @@ import http from "../http-common";
 
 class TutorialDataService {
   getAll() {
-    return http.get("/tutorials/");
+    return http.get("/tutorials/all");
   }
 
   get(id) {
@@ -14,7 +14,7 @@ class TutorialDataService {
   }
 
   update(id, data) {
-    return http.put(`/tutorials/${id}`, data);
+    return http.patch(`/tutorials/${id}`, data);
   }
 
   delete(id) {
@@ -22,7 +22,7 @@ class TutorialDataService {
   }
 
   deleteAll() {
-    return http.delete(`/tutorials/`);
+    return http.delete(`/tutorials/deleteAll`);
   }
 
   findByTitle(title) {
