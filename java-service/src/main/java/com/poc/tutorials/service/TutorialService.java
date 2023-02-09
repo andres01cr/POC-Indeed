@@ -32,8 +32,7 @@ public class TutorialService {
     return tutorialRepository.save(tutorialEntity);
   }
 
-  @Caching(evict = { @CacheEvict(cacheNames = "tutorials", key = "#id"),
-    @CacheEvict(cacheNames = "tutorials", allEntries = true) })
+  @Caching(evict = {@CacheEvict(cacheNames = "tutorials", allEntries = true) })
   public void deleteTutorialById(UUID tutorialId) {
     tutorialRepository.deleteById(tutorialId);
   }
