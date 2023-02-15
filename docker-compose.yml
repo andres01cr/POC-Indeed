@@ -59,7 +59,6 @@ services:
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
       - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
-
   mongo_db:
     image: mongo:4.4.3
     hostname: mongo
@@ -74,6 +73,34 @@ services:
       - PORT=27017
     ports:
       - 27017:27017
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+  user-registration-gateway:
+    container_name: user-registration-gateway
+    image: local-user-registration-gateway
+    build:
+      context: ./user-registration-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8080"
+    environment:
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_RABBITMQ_USERNAME=guest
+      - SPRING_RABBITMQ_PASSWORD=guest
+    depends_on:
+      - rabbitmq
+    volumes:
+      - './user-registration-gateway/src:/user-registration-gateway/src'
+      - './user-registration-gateway/target:/user-registration-gateway/target'
+      - './user-registration-gateway/pom.xml:/user-registration-gateway/pom.xml'
+      - './user-registration-gateway/mvnw:/user-registration-gateway/mvnw'
+      - '~/.m2:/root/.m2'
 
 volumes:
   postgres-data:
