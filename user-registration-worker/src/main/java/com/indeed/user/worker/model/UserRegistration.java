@@ -22,4 +22,17 @@ public class UserRegistration implements Serializable {
     String firstname;
     String lastname;
     UUID id;
+
+    @JsonCreator
+    public UserRegistration(@JsonProperty("username") String username,
+                            @JsonProperty("email") String email,
+                            @JsonProperty("firstname") String firstname,
+                            @JsonProperty("lastname") String lastname,
+                            @JsonProperty("id") UUID id) {
+        this.username = username;
+        this.email = email;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.id = id;
+    }
 }

@@ -44,5 +44,4 @@ public class UserRegistrationController {
         return ResponseEntity.ok(userRegistration.getId());
     }
 
-
 }

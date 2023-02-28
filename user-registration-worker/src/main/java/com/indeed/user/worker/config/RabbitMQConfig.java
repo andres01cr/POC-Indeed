@@ -27,5 +27,22 @@ public class RabbitMQConfig {
     public DirectExchange exchange() {
         log.info("Init exchange");
         return new DirectExchange(EXCHANGE_NAME, true, false);
+    }
 
+    @Bean
+    Binding binding(Queue queue, DirectExchange exchange) {
+        return BindingBuilder.bind(queue).to(exchange).withQueueName();
+    }
+
+    @Bean
+    public RabbitTemplate rabbitTemplate(final ConnectionFactory connectionFactory) {
+        final var rabbitTemplate = new RabbitTemplate(connectionFactory);
+        rabbitTemplate.setMessageConverter(producerJackson2MessageConverter());
+        return rabbitTemplate;
+    }
+
+    @Bean
+    public Jackson2JsonMessageConverter producerJackson2MessageConverter() {
+        return new Jackson2JsonMessageConverter();
+    }
 }
