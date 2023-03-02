@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.UUID;
 
+import static com.indeed.user.gateway.config.RabbitMQConfig.USER_REGISTRATION_EXCHANGE;
+import static com.indeed.user.gateway.config.RabbitMQConfig.USER_REGISTRATION_ROUTING_KEY;
+
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
 @RestController
@@ -30,18 +33,17 @@ public class UserRegistrationController {
      */
     @PostMapping
     public ResponseEntity<UUID> createUserRegistration(
-            @Valid @RequestBody UserRegistrationRequest userRegistrationRequest) {
+      @Valid @RequestBody UserRegistrationRequest userRegistrationRequest) {
         UserRegistration userRegistration = UserRegistration.builder()
-                .id(UUID.randomUUID())
-                .firstname(userRegistrationRequest.getFirstname())
-                .email(userRegistrationRequest.getEmail())
-                .lastname(userRegistrationRequest.getLastname())
-                .username(userRegistrationRequest.getUsername())
-                .build();
+          .id(UUID.randomUUID())
+          .firstname(userRegistrationRequest.getFirstname())
+          .email(userRegistrationRequest.getEmail())
+          .lastname(userRegistrationRequest.getLastname())
+          .username(userRegistrationRequest.getUsername())
+          .build();
         log.info("Received request to create user: {}", userRegistrationRequest);
-        rabbitTemplate.convertAndSend("", "q.user-registration", userRegistration);
+        rabbitTemplate.convertAndSend(USER_REGISTRATION_EXCHANGE, USER_REGISTRATION_ROUTING_KEY, userRegistration);
 
         return ResponseEntity.ok(userRegistration.getId());
     }
-
 }
