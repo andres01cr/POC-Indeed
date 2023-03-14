@@ -18,4 +18,14 @@ public class UserNotificationWorker {
 
     UserNotificationRepository userNotificationRepository;
 
+    @KafkaListener(id = "demoGroup", topics = "user-notification")
+    public void consume(ConsumerRecord<String, UserNotification> record) {
+
+        log.info("Received {}", record.value().toString());
+        UserNotification userNotification = record.value();
+        log.info("Sending email {} to  [{}]", userNotification.getEmail(), userNotification.getUsername());
+
+        userNotificationRepository.save(userNotification);
+    }
+
 }
