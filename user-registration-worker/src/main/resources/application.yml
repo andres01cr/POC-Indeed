@@ -54,3 +54,9 @@ spring:
 logging:
   level:
     ROOT: INFO
+
+
+auto:
+  create:
+    topics:
+      enable: true

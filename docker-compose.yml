@@ -127,7 +127,197 @@ services:
       - POSTGRES_PASSWORD=postgres
     depends_on:
       - rabbitmq
-      - user-registration-gateway
+      - user-registration-gatewayversion: '3'
+          services:
+            java-service:
+              container_name: java-service
+              image: local-java-service
+              build:
+                context: ./java-service
+                dockerfile: Dockerfile
+              ports:
+                - "8080:8080"
+              environment:
+                - POSTGRES_URL=jdbc:postgresql://postgres:5432/postgres
+                - POSTGRES_USER=postgres
+                - POSTGRES_PASSWORD=postgres
+                - SPRING_REDIS_HOST=cache
+                - SPRING_REDIS_PORT=6379
+                - MONGO_INITDB_DATABASE=test_db
+                - MONGO_DB_USERNAME=root
+                - MONGO_DB_PASSWORD=root
+                - MONGO_DB_HOST=mongo_db
+              depends_on:
+                - postgres
+                - cache
+                - mongo
+              volumes:
+                - './java-service/src:/java-service/src'
+                - './java-service/target:/java-service/target'
+                - './java-service/pom.xml:/java-service/pom.xml'
+                - './java-service/mvnw:/java-service/mvnw'
+                - '~/.m2:/root/.m2'
+              links:
+                - cache
+
+            postgres:
+              image: postgres
+              environment:
+                - POSTGRES_USER=postgres
+                - POSTGRES_PASSWORD=postgres
+              volumes:
+                - postgres-data:/var/lib/postgresql/data
+              ports:
+                - "5432:5432"
+            react-service:
+              container_name: react-service
+              image: local-react-service
+              build:
+                context: ./react-service
+                dockerfile: Dockerfile
+              ports:
+                - "3000:3000"
+              volumes:
+                - './react-service/src:/react-service/src'
+            cache:
+              image: redis:6.2-alpine
+              hostname: redis
+              restart: always
+              ports:
+                - "6379:6379"
+              command: redis-server --save 20 1 --loglevel warning
+              environment:
+                - ALLOW_EMPTY_PASSWORD=yes
+                - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+
+            mongo_db:
+              image: mongo:4.4.3
+              hostname: mongo
+              container_name: mongo
+              restart: always
+              environment:
+                - MONGO_INITDB_ROOT_USERNAME=root
+                - MONGO_INITDB_ROOT_PASSWORD=root
+                - MONGO_INITDB_DATABASE=test_db
+                - MONGO_DB_USERNAME=root
+                - MONGO_DB_PASSWORD=root
+                - PORT=27017
+              ports:
+                - 27017:27017
+
+            rabbitmq:
+              image: rabbitmq:3-management
+              container_name: rabbitmq
+              restart: always
+              ports:
+                - "15672:15672"
+                - "5672:5672"
+
+            user-registration-gateway:
+              container_name: user-registration-gateway
+              image: local-user-registration-gateway
+              build:
+                context: ./user-registration-gateway
+                dockerfile: Dockerfile
+              ports:
+                - "8082:8080"
+              environment:
+                - SPRING_RABBITMQ_HOST=rabbitmq
+                - SPRING_RABBITMQ_PORT=5672
+                - SPRING_RABBITMQ_USERNAME=guest
+                - SPRING_RABBITMQ_PASSWORD=guest
+              depends_on:
+                - rabbitmq
+                - postgres
+              volumes:
+                - './user-registration-gateway/src:/user-registration-gateway/src'
+                - './user-registration-gateway/target:/user-registration-gateway/target'
+                - './user-registration-gateway/pom.xml:/user-registration-gateway/pom.xml'
+                - './user-registration-gateway/mvnw:/user-registration-gateway/mvnw'
+                - '~/.m2:/root/.m2'
+
+            user-registration-worker:
+              container_name: user-registration-worker
+              image: local-user-registration-worker
+              build:
+                context: ./user-registration-worker
+                dockerfile: Dockerfile
+              ports:
+                - "8083:8080"
+                - "5564:5564"
+              environment:
+                - SPRING_KAFKA_CONSUMER_BOOTSTRAP_SERVERS=broker:9092
+                - SPRING_RABBITMQ_HOST=rabbitmq
+                - SPRING_RABBITMQ_PORT=5672
+                - SPRING_RABBITMQ_USERNAME=guest
+                - SPRING_RABBITMQ_PASSWORD=guest
+                - POSTGRES_URL=jdbc:postgresql://postgres:5432/postgres
+                - POSTGRES_USER=postgres
+                - POSTGRES_PASSWORD=postgres
+              depends_on:
+                - rabbitmq
+                - user-registration-gateway
+                - postgres
+                - kafka
+              volumes:
+                - './user-registration-worker/src:/user-registration-worker/src'
+                - './user-registration-worker/target:/user-registration-worker/target'
+                - './user-registration-worker/pom.xml:/user-registration-worker/pom.xml'
+                - './user-registration-worker/mvnw:/user-registration-worker/mvnw'
+                - '~/.m2:/root/.m2'
+              links:
+                - broker
+
+            zookeeper:
+              image: confluentinc/cp-zookeeper:7.3.0
+              container_name: zookeeper
+              environment:
+                - ZOOKEEPER_CLIENT_PORT=2181
+                - ZOOKEEPER_TICK_TIME=2000
+
+            broker:
+              image: confluentinc/cp-kafka:7.3.0
+              container_name: broker
+              ports:
+                # To learn about configuring Kafka for access across networks see
+                # https://www.confluent.io/blog/kafka-client-cannot-connect-to-broker-on-aws-on-docker-etc/
+                - "9092:9092"
+              depends_on:
+                - zookeeper
+              environment:
+                - KAFKA_BROKER_ID=1
+                - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+                - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+
+            user-notification-worker:
+              container_name: user-notification-worker
+              image: local-user-notification-worker
+              build:
+                context: ./user-notification-worker
+                dockerfile: Dockerfile
+              ports:
+                - "8084:8080"
+                - "5562:5562"
+              environment:
+                - SPRING_KAFKA_CONSUMER_BOOTSTRAP_SERVERS=broker:9092
+                - POSTGRES_URL=jdbc:postgresql://postgres:5432/postgres
+                - POSTGRES_USER=postgres
+                - POSTGRES_PASSWORD=postgres
+              depends_on:
+                - broker
+                - user-registration-worker
+                - postgres
+              volumes:
+                - './user-notification-worker/src:/user-notification-worker/src'
+                - './user-notification-worker/target:/user-notification-worker/target'
+                - './user-notification-worker/pom.xml:/user-notification-worker/pom.xml'
+                - './user-notification-worker/mvnw:/user-notification-worker/mvnw'
+                - '~/.m2:/root/.m2'
+
+          volumes:
+            postgres-data:
+            cache:
+              driver: local
       - postgres
       - kafka
     volumes:
@@ -164,16 +354,16 @@ services:
       - KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1
       - KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1
 
-#  kafka-ui:
-#    image: provectuslabs/kafka-ui
-#    ports:
-#      - "8086:8080"
-#    environment:
-#      - KAFKA_CLUSTERS_0_NAME=local
-#      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
-#      - KAFKA_CLUSTERS_0_READONLY=true
-#    depends_on:
-#      - kafka
+  #  kafka-ui:
+  #    image: provectuslabs/kafka-ui
+  #    ports:
+  #      - "8086:8080"
+  #    environment:
+  #      - KAFKA_CLUSTERS_0_NAME=local
+  #      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
+  #      - KAFKA_CLUSTERS_0_READONLY=true
+  #    depends_on:
+  #      - kafka
 
 
   user-notification-worker:
