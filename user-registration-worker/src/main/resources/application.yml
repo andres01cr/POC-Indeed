@@ -41,7 +41,7 @@ spring:
           initial-interval: 3s
           max-attempts: 3
           max-interval: 5s
-          multiplier: 2
+          multiplier: 1
 
   jackson:
     serialization:
@@ -50,6 +50,12 @@ spring:
   main:
     allow-circular-references: true
     allow-bean-definition-overriding: true
+
+  kafka:
+    producer:
+      bootstrap-servers: ${SPRING_KAFKA_CONSUMER_BOOTSTRAP_SERVERS:http://localhost:9092}
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
 logging:
   level:
