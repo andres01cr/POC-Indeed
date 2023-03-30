@@ -23,6 +23,11 @@ public class PostController {
     @Autowired
     PostRepository postRepository;
 
+    @QueryMapping
+    public List<Post> recentPosts(@Argument int count, @Argument int offset) {
+        return postRepository.findAll().subList(offset , offset + count);
+    }
+
     @MutationMapping
     public Post createPost(@Argument String title, @Argument String text,
                            @Argument String authorId) {
