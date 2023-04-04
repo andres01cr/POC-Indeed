@@ -1,0 +1,13 @@
+
+query tutoriasl($id: ID!) {
+    tutorials(id: $id) {
+        id
+        name
+        description,
+        reviews {
+            id,
+            text,
+            starRating
+        }
+    }
+}
