@@ -1,5 +1,22 @@
 import React, { Component } from "react";
 import TutorialDataService from "../services/tutorial.service";
+import { Mutation } from 'react-apollo';
+import gql from 'graphql-tag';
+
+const ADD_TUTORIAL = gql`
+  mutation($title: title, $description: description, $published ) {
+    createPost(title: "Test",
+    authorId: "420d29b8-5b91-47c9-8960-9f7785ab9521",
+  	text: "Any Text" ){
+    	id
+    	title
+    	author {
+        id,
+        name
+      }
+    }
+  }
+`;
 
 export default class AddTutorial extends Component {
   constructor(props) {
@@ -30,7 +47,6 @@ export default class AddTutorial extends Component {
       published: e.target.checked
     });
   }
-
 
   onChangeDescription(e) {
     this.setState({
@@ -71,6 +87,10 @@ export default class AddTutorial extends Component {
 
       submitted: false
     });
+  }
+
+  renderSubmitButton() {
+    
   }
 
   render() {
@@ -122,9 +142,13 @@ export default class AddTutorial extends Component {
               />
             </div>
 
-            <button onClick={this.saveTutorial} className="btn btn-success">
-              Submit
-            </button>
+            <Mutation mutation={ADD_TUTORIAL} variables={{title:this.state.title, description:this.state.description , published: this.state.published}}>
+              {newTutorial => (
+                <button className="btn btn-success"  type="button" onClick={newTutorial}>
+                  Submit
+                </button>
+              )}
+            </Mutation>
           </div>
         )}
       </div>

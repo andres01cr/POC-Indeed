@@ -1,0 +1,9 @@
+query AllTutorials {
+  recentPosts(count: 2, offset: 0) {
+    id,
+    author {
+      id,
+      name
+    }
+  } 
+}

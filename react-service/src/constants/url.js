@@ -1,0 +1,1 @@
+export const graphqlApiUrl = `${process.env.REACT_APP_GRAPHQL_API_URL}`;

@@ -1,6 +1,10 @@
 import React, { Component } from "react";
 import TutorialDataService from "../services/tutorial.service";
 import { withRouter } from '../common/with-router';
+import gql from 'graphql-tag';
+import { Mutation } from 'react-apollo';
+
+
 
 class Tutorial extends Component {
   constructor(props) {

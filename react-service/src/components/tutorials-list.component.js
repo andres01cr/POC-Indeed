@@ -1,6 +1,19 @@
 import React, { Component } from "react";
 import TutorialDataService from "../services/tutorial.service";
 import { Link } from "react-router-dom";
+import { Query } from 'react-apollo';
+import gql from 'graphql-tag'; 
+
+const TUTORIALS_LIST = gql `query {
+  recentPosts(count: 2, offset: 0) {
+    id,
+    author {
+      id,
+      name
+    }
+  } 
+}`
+
 
 export default class TutorialsList extends Component {
   constructor(props) {
@@ -90,7 +103,7 @@ export default class TutorialsList extends Component {
   }
 
   render() {
-    const { searchTitle, tutorials, currentTutorial, currentIndex } = this.state;
+    const { searchTitle, currentTutorial, currentIndex } = this.state;
 
     return (
       <div className="list row">
@@ -118,8 +131,10 @@ export default class TutorialsList extends Component {
           <h4>Course List</h4>
 
           <ul className="list-group">
-            {tutorials &&
-              tutorials.map((tutorial, index) => (
+          <Query query={ TUTORIALS_LIST }>
+            { ( { loading, error, data } ) => {
+            data.tutorials &&
+              data.tutorials.map((tutorial, index) => (
                 <li
                   className={
                     "list-group-item " +
@@ -131,6 +146,8 @@ export default class TutorialsList extends Component {
                   {tutorial.title}
                 </li>
               ))}
+            }
+            </Query>
           </ul>
 
           <button

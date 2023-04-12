@@ -1,0 +1,12 @@
+mutation{
+  createPost(title: "Test",
+    authorId: "420d29b8-5b91-47c9-8960-9f7785ab9521",
+  	text: "Any Text" ){
+    	id
+    	title
+    	author {
+        id,
+        name
+      }
+  }
+}
