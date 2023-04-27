@@ -83,6 +83,7 @@ services:
       - postgres-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+
   react-service:
     container_name: react-service
     image: local-react-service
@@ -103,6 +104,17 @@ services:
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
       - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+
+  react-service-functional:
+    container_name: react-service-functional
+    image: local-react-service-functional
+    build:
+      context: ./react-service-functional
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+    volumes:
+      - './react-service/src:/react-service--functional/src'
 
   mongo_db:
     image: mongo:4.4.3
@@ -207,17 +219,16 @@ services:
       - KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1
       - KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1
 
-  #  kafka-ui:
-  #    image: provectuslabs/kafka-ui
-  #    ports:
-  #      - "8086:8080"
-  #    environment:
-  #      - KAFKA_CLUSTERS_0_NAME=local
-  #      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
-  #      - KAFKA_CLUSTERS_0_READONLY=true
-  #    depends_on:
-  #      - kafka
-
+#  kafka-ui:
+#    image: provectuslabs/kafka-ui
+#    ports:
+#      - "8086:8080"
+#    environment:
+#      - KAFKA_CLUSTERS_0_NAME=local
+#      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
+#      - KAFKA_CLUSTERS_0_READONLY=true
+#    depends_on:
+#      - kafka
 
   user-notification-worker:
     container_name: user-notification-worker
